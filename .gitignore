@@ -1,0 +1,10 @@
+# Temporary MS Word lock files
+~$*.docx
+~$*.doc
+~$*.xlsx
+~$*.pptx
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
