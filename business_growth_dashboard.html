@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horizon TechX — Business Growth & Market Strategy Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --panel-bg: rgba(26, 32, 53, 0.75);
+      --panel-border: rgba(255, 255, 255, 0.1);
+      --primary: #6366f1;
+      --primary-glow: rgba(99, 102, 241, 0.25);
+      --secondary: #14b8a6;
+      --accent: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --card-bg: #1e1b4b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.18) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(20, 184, 166, 0.18) 0px, transparent 50%);
+    }
+
+    header {
+      padding: 2.5rem 2rem 1.5rem;
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .brand-section h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #818cf8, #2dd4bf);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-section p { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.2rem; }
+
+    .badge-group { display: flex; gap: 0.75rem; }
+
+    .badge {
+      padding: 0.4rem 0.8rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(99, 102, 241, 0.15);
+      color: #818cf8;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    .badge.green {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border-color: rgba(34, 197, 94, 0.3);
+    }
+
+    main { max-width: 1280px; margin: 2rem auto; padding: 0 1.5rem; }
+
+    .tabs-nav {
+      display: flex;
+      gap: 0.75rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--panel-border);
+      margin-bottom: 2rem;
+    }
+
+    .tab-btn {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      color: var(--text-muted);
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover { color: var(--text-main); background: rgba(99, 102, 241, 0.1); }
+
+    .tab-btn.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(20, 184, 166, 0.8));
+      border-color: transparent;
+      box-shadow: 0 4px 20px var(--primary-glow);
+    }
+
+    .tab-content { display: none; animation: fadeIn 0.4s ease; }
+    .tab-content.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .card {
+      background: rgba(30, 27, 75, 0.6);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: blur(12px);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .card-title { font-size: 1.15rem; font-weight: 700; color: #a5b4fc; }
+
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #818cf8, #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; }
+
+    .table-container { overflow-x: auto; margin: 1rem 0; border-radius: 12px; border: 1px solid var(--panel-border); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left; }
+
+    th { background: rgba(30, 27, 75, 0.9); color: #c7d2fe; font-weight: 700; padding: 0.85rem 1rem; }
+
+    td { padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #cbd5e1; }
+
+    tr:hover { background: rgba(99, 102, 241, 0.05); }
+
+    ul.feature-list { list-style: none; }
+    ul.feature-list li { position: relative; padding-left: 1.5rem; margin-bottom: 0.6rem; color: #cbd5e1; font-size: 0.92rem; }
+    ul.feature-list li::before { content: "✓"; position: absolute; left: 0; color: #2dd4bf; font-weight: 800; }
+
+    .file-download-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem; }
+
+    .file-download-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-action {
+      background: rgba(99, 102, 241, 0.2);
+      color: #818cf8;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .btn-action:hover { background: #6366f1; color: white; }
+    .chart-box { position: relative; height: 260px; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-section">
+      <h1>🚀 Horizon TechX — Business & Marketing Internship</h1>
+      <p>Virtual Internship Program | Duration: 10th Oct 2026 – 10th Nov 2026 (Remote)</p>
+    </div>
+    <div class="badge-group">
+      <a href="https://github.com/Rak18936" target="_blank" style="text-decoration:none;"><span class="badge" style="background:rgba(238, 242, 255, 0.15); color:#a5b4fc; border-color:rgba(165, 180, 252, 0.4);">📁 GitHub: github.com/Rak18936</span></a>
+      <span class="badge green">✓ All 4 Tasks Completed</span>
+      <span class="badge">PDF & DOCX Ready</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('task1')">📈 Task 1: Market Research</button>
+      <button class="tab-btn" onclick="switchTab('task2')">🎯 Task 2: Brand Strategy</button>
+      <button class="tab-btn" onclick="switchTab('task3')">👥 Task 3: Consumer Behavior</button>
+      <button class="tab-btn" onclick="switchTab('task4')">📣 Task 4: Growth Campaign</button>
+    </div>
+
+    <!-- TAB 1: MARKET RESEARCH -->
+    <div id="task1" class="tab-content active">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🌐 EdTech & Skill Acceleration Market Sizing</span>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Segment</th>
+                  <th>Valuation</th>
+                  <th>CAGR</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><b>TAM (Total Market)</b></td><td>$340 Billion</td><td>15.8%</td></tr>
+                <tr><td><b>SAM (Serviceable Market)</b></td><td>$24 Billion</td><td>18.2%</td></tr>
+                <tr><td><b>SOM (Target Focus)</b></td><td>$450 Million</td><td>28.4%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">⚖️ Strategic SWOT Highlights</span>
+          </div>
+          <ul class="feature-list">
+            <li><b>Strengths:</b> Hands-on project internships, QR-verified credentials, accessible pricing.</li>
+            <li><b>Weaknesses:</b> Brand penetration in Tier-3 cities, manual review scaling.</li>
+            <li><b>Opportunities:</b> Generative AI skill surge, B2B corporate upskilling, campus ambassadors.</li>
+            <li><b>Threats:</b> MOOC price competition, fast-changing tech stacks.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">📁 Download Task 1 Documents</span></div>
+        <div class="file-download-grid">
+          <div class="file-download-card">
+            <div><h4>Task 1 Report (PDF)</h4><p>SWOT & Competitor Matrix</p></div>
+            <a href="Task_1_Startup_Market_Research_Report.pdf" target="_blank" class="btn-action">Open PDF</a>
+          </div>
+          <div class="file-download-card">
+            <div><h4>Task 1 Report (DOCX)</h4><p>Editable Word Document</p></div>
+            <a href="Task_1_Startup_Market_Research_Report.docx" target="_blank" class="btn-action">Open DOCX</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: BRAND STRATEGY -->
+    <div id="task2" class="tab-content">
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-header"><span class="card-title">🎯 Brand Positioning & Value Pillars</span></div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Brand Pillar</th>
+                <th>Core Promise</th>
+                <th>Feature Realization</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><b>Project-First Learning</b></td><td>Zero fluff, 100% real-world output.</td><td>Dashboards, HR policies, AI research papers.</td></tr>
+              <tr><td><b>Verifiable Credentials</b></td><td>Employer-ready trust.</td><td>QR-verified certs, unique IDs, digital badges.</td></tr>
+              <tr><td><b>Fast-Track Career</b></td><td>Direct transition to roles.</td><td>Resume support, LORs, placement guidance.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">📁 Download Task 2 Documents</span></div>
+        <div class="file-download-grid">
+          <div class="file-download-card">
+            <div><h4>Task 2 Strategy (PDF)</h4><p>Brand Framework PDF</p></div>
+            <a href="Task_2_Brand_Positioning_and_Growth_Strategy.pdf" target="_blank" class="btn-action">Open PDF</a>
+          </div>
+          <div class="file-download-card">
+            <div><h4>Task 2 Strategy (DOCX)</h4><p>Word Document</p></div>
+            <a href="Task_2_Brand_Positioning_and_Growth_Strategy.docx" target="_blank" class="btn-action">Open DOCX</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: CONSUMER BEHAVIOR -->
+    <div id="task3" class="tab-content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><span class="card-title">📊 Key Decision Drivers (% Surveyed)</span></div>
+          <div class="chart-box">
+            <canvas id="driversChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">👥 Customer Persona Breakdown</span></div>
+          <ul class="feature-list">
+            <li><b>Persona A (Tech Undergrad):</b> Needs resume project proof for campus placement drives.</li>
+            <li><b>Persona B (Career Switcher):</b> Seeking structured mentorship for HR/Data analytics transition.</li>
+            <li><b>Persona C (Early Pro):</b> Wants fast-track GenAI skills to accelerate promotion.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">📁 Download Task 3 Documents</span></div>
+        <div class="file-download-grid">
+          <div class="file-download-card">
+            <div><h4>Task 3 Analysis (PDF)</h4><p>Behavioral Study PDF</p></div>
+            <a href="Task_3_Consumer_Behavior_Analysis.pdf" target="_blank" class="btn-action">Open PDF</a>
+          </div>
+          <div class="file-download-card">
+            <div><h4>Task 3 Analysis (DOCX)</h4><p>Word Document</p></div>
+            <a href="Task_3_Consumer_Behavior_Analysis.docx" target="_blank" class="btn-action">Open DOCX</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: GROWTH CAMPAIGN -->
+    <div id="task4" class="tab-content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><span class="card-title">📣 Campaign KPI Benchmarks</span></div>
+          <div style="display: flex; gap: 1.5rem; justify-content: center; margin: 1rem 0;">
+            <div style="text-align: center;"><div class="stat-number">2.5M</div><div class="stat-label">Total Reach</div></div>
+            <div style="text-align: center;"><div class="stat-number">15,000</div><div class="stat-label">Leads</div></div>
+            <div style="text-align: center;"><div class="stat-number">3.8x</div><div class="stat-label">Projected ROAS</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">💰 Budget Allocation (₹2,50,000)</span></div>
+          <div class="chart-box">
+            <canvas id="budgetChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">📁 Download Task 4 Documents</span></div>
+        <div class="file-download-grid">
+          <div class="file-download-card">
+            <div><h4>Task 4 Plan (PDF)</h4><p>90-Day Campaign PDF</p></div>
+            <a href="Task_4_Business_Growth_Campaign_Plan.pdf" target="_blank" class="btn-action">Open PDF</a>
+          </div>
+          <div class="file-download-card">
+            <div><h4>Task 4 Plan (DOCX)</h4><p>Word Document</p></div>
+            <a href="Task_4_Business_Growth_Campaign_Plan.docx" target="_blank" class="btn-action">Open DOCX</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+
+      if (tabId === 'task3') renderDriversChart();
+      if (tabId === 'task4') renderBudgetChart();
+    }
+
+    let driversChartInstance = null;
+    function renderDriversChart() {
+      if (driversChartInstance) return;
+      const ctx = document.getElementById('driversChart').getContext('2d');
+      driversChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Project Portfolio Proof (68%)', 'Verified Certificate (21%)', 'Pricing (11%)'],
+          datasets: [{
+            data: [68, 21, 11],
+            backgroundColor: ['#6366f1', '#14b8a6', '#f43f5e']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#94a3b8' } } } }
+      });
+    }
+
+    let budgetChartInstance = null;
+    function renderBudgetChart() {
+      if (budgetChartInstance) return;
+      const ctx = document.getElementById('budgetChart').getContext('2d');
+      budgetChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Meta Ads (40%)', 'LinkedIn Ads (26%)', 'Google PPC (16%)', 'Webinars/Influencers (12%)', 'Creatives (6%)'],
+          datasets: [{
+            data: [40, 26, 16, 12, 6],
+            backgroundColor: ['#6366f1', '#0284c7', '#34d399', '#f59e0b', '#ec4899']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#94a3b8' } } } }
+      });
+    }
+  </script>
+</body>
+</html>
