@@ -3,7 +3,7 @@
 Welcome to the official project repository for the **Horizon TechX Virtual Internship Program** (Business & Marketing Track).
 
 > 📌 **Program:** Horizon TechX Virtual Internship Program  
-> 🗓️ **Duration:** 10th Oct 2026 to 10th Nov 2026 (Remote)  
+> 🗓️ **Duration:** 1 july 2026 to 1 September 2026 (Remote)  
 > 🌐 **Official Platform:** [Horizon TechX](https://horizontechx.com)  
 > 👤 **Contributor:** Rak18936  
 > 🔗 **Repository URL:** [https://github.com/Rak18936/-Horizon-TechX-Business-Marketing-Internship-Deliverables](https://github.com/Rak18936/-Horizon-TechX-Business-Marketing-Internship-Deliverables)
